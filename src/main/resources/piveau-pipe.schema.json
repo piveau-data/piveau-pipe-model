@@ -1,0 +1,235 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://io.piveau/resources/piveau-pipe.schema.json",
+  "title": "pipe",
+  "description": "viaduct pipe object schema",
+  "type": "object",
+  "required": [ "header", "body" ],
+  "properties": {
+    "header": {
+      "ref": "#/definitions/PipeHeader"
+    },
+    "body": {
+      "$ref": "#/definitions/PipeBody"
+    }
+  },
+  "definitions": {
+    "PipeHeader": {
+      "description": "all headers are set by the pipe orchestrator and shall not be altered by services",
+      "type": "object",
+      "required": [ "id", "name", "transport", "version" ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "runId": {
+          "type": "string"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastRun": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "title": {
+          "type": "string"
+        },
+        "context": {
+          "type": "string"
+        },
+        "transport": {
+          "description": "payload: data transportation by payload in pipe; xxx: payload transport outside pipe",
+          "enum": [ "payload" ]
+        },
+        "version": {
+          "description": "version of service_pipe_definition",
+          "type": "string"
+        }
+      }
+    },
+    "PipeBody": {
+      "type": "object",
+      "required": [ "segments" ],
+      "properties": {
+        "segments": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/Segment"
+          }
+        },
+        "payloads": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Payload"
+          }
+        }
+      }
+    },
+    "Segment": {
+      "type": "object",
+      "required": [ "header", "body" ],
+      "properties": {
+        "header": {
+          "$ref": "#/definitions/SegmentHeader"
+        },
+        "body": {
+          "$ref": "#/definitions/SegmentBody"
+        }
+      }
+    },
+    "Payload": {
+      "type": "object",
+      "required": [ "header", "body" ],
+      "properties": {
+        "header": {
+          "$ref": "#/definitions/PayloadHeader"
+        },
+        "body": {
+          "$ref": "#/definitions/PayloadBody"
+        }
+      }
+    },
+    "SegmentHeader": {
+      "type": "object",
+      "required": [ "name", "segmentNumber", "processed" ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "segmentNumber": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "processed": {
+          "type": "boolean"
+        },
+        "title": {
+          "type": "string"
+        },
+        "errorHandlerId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "SegmentBody": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "$ref": "#/definitions/Endpoint"
+        },
+        "config": {
+          "type": "object"
+        },
+        "payload": {
+          "$ref": "#/definitions/Payload"
+        }
+      }
+    },
+    "PayloadHeader": {
+      "type": "object",
+      "required": [ "seqNumber", "dataType" ],
+      "properties": {
+        "seqNumber": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dataType": {
+          "enum": [ "text", "base64" ]
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "signed": {
+          "type": "boolean",
+          "default": false
+        },
+        "signature": {
+          "type": "string"
+        },
+        "signee": {
+          "type": "string"
+        },
+        "encrypted": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "PayloadBody": {
+      "type": "object",
+      "required": [ "data" ],
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "cipher": {
+          "type": "string"
+        },
+        "dataMimeType": {
+          "type": "string"
+        },
+        "dataInfo": {
+          "type": "object"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string",
+              "contentEncoding": "base64"
+            }
+
+          ]
+        }
+      }
+    },
+    "Endpoint": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "authentication": {
+          "type": "object",
+          "properties": {
+            "authMethod": {
+              "type": "string"
+            },
+            "credentials": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
